@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>SaGe</title>
+        <link rel="stylesheet" href="style.css">
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.26/webcam.min.js"></script>
+    </head>
+    <body>
+        <header>
+            <h1>SaGe</h1>
+        </header>
+        <div class="center">
+            <div id="webcam"></div>
+            <button onclick="snapshot()">Click</button>
+        </div>
+
+        <script>
+            Webcam.set({
+                width: 1080,
+                height: 608, 
+                image_format: 'jpeg',
+                jpeg_quality: 90
+            });
+
+            Webcam.attach('#webcam');
+            
+            function snapshot(){
+                document.getElementById('webcam').innerHTML = "";
+                Webcam.snap( function(data_uri) {
+                    console.log(data_uri);
+                    document.getElementById('webcam').innerHTML = "<img src='"+data_uri+"'/>";
+                });
+                var audio = new Audio("audio/snap.wav");
+                audio.play();
+            }
+        </script>
+    </body>
+</html>
