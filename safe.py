@@ -102,6 +102,10 @@ class SaFe:
 
 while True:
     s = SaFe()
+    
     # s.faceAdd("elon.jpg", 1)
-    s.img = "elon.jpg"
-    s.faceRequests()
+    
+    # s.img = "elon.jpg"
+    # s.faceRequests()
+
+    s.test()
