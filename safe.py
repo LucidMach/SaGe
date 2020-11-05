@@ -14,6 +14,7 @@ class SaFe:
     def __init__(self, mode=0):
         self.mode = mode
         self.img = ""
+        self.dir = "C:/Users/nukal/dev/SaGe"  
         self.inPath = "C:/Users/nukal/Pictures/Camera Roll"
         self.outPath = "C:/Users/nukal/dev/SaGe/images/un"
         self.out =  "C:/Users/nukal/dev/SaGe/images"
@@ -26,11 +27,6 @@ class SaFe:
                 os.rename(self.inPath+"/"+file,self.outPath+"/"+file)
                 self.img = file
 
-    def faceRequests(self):
-        # self.inFace = "images/un/"+input("Enter path to Face: ")
-        self.inFace = "images/un/" + self.img
-        self.outFace = loadtxt("faEnc.csv", delimiter=",")
-
     def faceHandle(self):
         self.imgTs = fr.load_image_file(self.inFace)
         print(self.inFace)
@@ -39,15 +35,6 @@ class SaFe:
         self.faEncTs = fr.face_encodings(self.imgTs)[0]
         cv2.rectangle(self.imgTs, (self.faLocTs[3], self.faLocTs[0]),
                       (self.faLocTs[1], self.faLocTs[2]), (255, 0, 255), 2)
-
-    def faceAdd(self, fa):
-        self.imgTr = fr.load_image_file("images/un/"+fa)
-        self.imgTr = cv2.cvtColor(self.imgTr, cv2.COLOR_BGR2RGB)
-        self.faLocTr = fr.face_locations(self.imgTr)[0]
-        self.outFace = fr.face_encodings(self.imgTr)[0]
-        cv2.rectangle(self.imgTr, (self.faLocTr[3], self.faLocTr[0]),
-                      (self.faLocTr[1], self.faLocTr[2]), (255, 0, 255), 2)
-        savetxt("faEnc.csv", self.outFace, delimiter=',')
 
     def faceRecog(self):
         self.result = fr.compare_faces([self.outFace], self.faEncTs)
@@ -59,13 +46,33 @@ class SaFe:
         print(self.result)
         print(self.accu*100, "Accuracy")
 
+    def faceAdd(self, fa, num):
+        self.imgTr = fr.load_image_file("images/un/"+fa)
+        self.imgTr = cv2.cvtColor(self.imgTr, cv2.COLOR_BGR2RGB)
+        self.faLocTr = fr.face_locations(self.imgTr)[0]
+        self.outFace = fr.face_encodings(self.imgTr)[0]
+        cv2.rectangle(self.imgTr, (self.faLocTr[3], self.faLocTr[0]),
+                      (self.faLocTr[1], self.faLocTr[2]), (255, 0, 255), 2)
+        face = "faEnc"+str(num)+".csv"
+        savetxt(face, self.outFace, delimiter=',')
+    # remeber to add face to "un" directory
+    def faceRequests(self):
+        # self.inFace = "images/un/"+input("Enter path to Face: ")
+        self.inFace = "images/un/" + self.img
+        for i in range(10):
+            csv = "faEnc"+str(i)+".csv"
+            try:
+                self.outFace = loadtxt(csv, delimiter=",")
+                self.faceHandle()
+                self.faceRecog()
+            except:
+                pass    
+
     def ardHandle(self, port, Brate):
         a = self.result
         se = serial.Serial(port,Brate)
         if a == "H":
             se.write(b"H")
-        elif a == "L":
-            se.write(b"L")
         se.close()
 
     def rPihandle(self, pin):
@@ -87,14 +94,14 @@ class SaFe:
             self.faceLoad()
             if self.img != "":
                 self.faceRequests()
-                self.faceHandle()
-                self.faceRecog()
                 self.faceClear()
-            self.ardHandle("COM5",9600)
+            # self.ardHandle("COM5",9600)
         except:
             time.sleep(0.1)
         
 
 while True:
     s = SaFe()
-    s.test()
+    # s.faceAdd("elon.jpg", 1)
+    s.img = "elon.jpg"
+    s.faceRequests()

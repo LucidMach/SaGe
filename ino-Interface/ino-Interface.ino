@@ -15,9 +15,7 @@ void loop()
   if (io == 'H')
   {
     digitalWrite(LED, LOW);
-  }
-  if (io == 'L')
-  {
+    delay(1000);
     digitalWrite(LED, HIGH);
   }
 }
