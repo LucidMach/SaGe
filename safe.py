@@ -3,6 +3,7 @@ import numpy as np
 import face_recognition as fr
 import serial, time
 import os,fnmatch
+from datetime import date
 from gpiozero import LED
 from numpy import savetxt
 from numpy import loadtxt
@@ -11,13 +12,19 @@ from datetime import datetime
 
 class SaFe:
     # 0 : null, 1 : ard, 2 : rPI
-    def __init__(self, mode=0):
+    def __init__(self, mode=0, port = "COM5", Brate = 9600, pin = 22):
         self.mode = mode
+        if self.mode == 1:
+            self.port = port
+            self.Brate = Brate
+        elif self.mode == 2:
+            self.pin = pin
         self.img = ""
         self.dir = "C:/Users/nukal/dev/SaGe"  
         self.inPath = "C:/Users/nukal/Pictures/Camera Roll"
         self.outPath = "C:/Users/nukal/dev/SaGe/images/un"
         self.out =  "C:/Users/nukal/dev/SaGe/images"
+        self.faces = {0:"Suraj",1:"Elon"}
 
     def faceLoad(self):
         self.files = os.listdir(self.inPath)
@@ -55,9 +62,12 @@ class SaFe:
                       (self.faLocTr[1], self.faLocTr[2]), (255, 0, 255), 2)
         face = "faEnc"+str(num)+".csv"
         savetxt(face, self.outFace, delimiter=',')
-    # remeber to add face to "un" directory
+    # remeber to add face to "un" directory and update dictionary
     def faceRequests(self):
         # self.inFace = "images/un/"+input("Enter path to Face: ")
+        t = time.localtime()
+        t = time.strftime("%H:%M:%S", t)
+        d = date.today()
         self.inFace = "images/un/" + self.img
         for i in range(10):
             csv = "faEnc"+str(i)+".csv"
@@ -65,18 +75,22 @@ class SaFe:
                 self.outFace = loadtxt(csv, delimiter=",")
                 self.faceHandle()
                 self.faceRecog()
+                if self.result == "H":
+                    print(f"{self.faces[i]} is recognised at {t}")
+                    with open("SaGe-log.txt","a") as log:
+                        log.write(f"{self.faces[i]} is recognised at {t} on {d}\n")
             except:
                 pass    
 
-    def ardHandle(self, port, Brate):
+    def ardHandle(self):
         a = self.result
-        se = serial.Serial(port,Brate)
+        se = serial.Serial(self.port,self.Brate)
         if a == "H":
             se.write(b"H")
         se.close()
 
-    def rPihandle(self, pin):
-        l = LED(pin)
+    def rPihandle(self):
+        l = LED(self.pin)
         if(self.result == 1):
             l.on()
         else:
@@ -95,7 +109,7 @@ class SaFe:
             if self.img != "":
                 self.faceRequests()
                 self.faceClear()
-            # self.ardHandle("COM5",9600)
+            # self.ardHandle()
         except:
             time.sleep(0.1)
         
