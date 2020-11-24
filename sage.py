@@ -10,7 +10,7 @@ from numpy import loadtxt
 from datetime import datetime
 
 
-class SaFe:
+class SaGe:
     # 0 : null, 1 : ard, 2 : rPI
     def __init__(self, mode=0, port = "COM5", Brate = 9600, pin = 22):
         self.mode = mode
@@ -77,7 +77,7 @@ class SaFe:
                 self.faceRecog()
                 if self.result == "H":
                     print(f"{self.faces[i]} is recognised at {t}")
-                    with open("SaGe-log.txt","a") as log:
+                    with open("log.txt","a") as log:
                         log.write(f"{self.faces[i]} is recognised at {t} on {d}\n")
             except:
                 pass    
@@ -115,7 +115,7 @@ class SaFe:
         
 
 while True:
-    s = SaFe()
+    s = SaGe()
     
     # s.faceAdd("elon.jpg", 1)
     
