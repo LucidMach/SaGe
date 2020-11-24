@@ -61,6 +61,8 @@ class SaGe:
         cv2.rectangle(self.imgTr, (self.faLocTr[3], self.faLocTr[0]),
                       (self.faLocTr[1], self.faLocTr[2]), (255, 0, 255), 2)
         face = "faEnc"+str(num)+".csv"
+        name = input("Enter Person's name")
+        self.faces.num = name
         savetxt(face, self.outFace, delimiter=',')
     # remeber to add face to "un" directory and update dictionary
     def faceRequests(self):
